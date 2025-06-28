@@ -1,1 +1,11 @@
 
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web.reactive: DEBUG
+    com.learn: DEBUG
+
+gateway:
+  timeout:
+    connect: 10000
+    response: 20000
