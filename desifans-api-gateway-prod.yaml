@@ -1,0 +1,10 @@
+logging:
+  level:
+    org.springframework.cloud.gateway: WARN
+    org.springframework.web.reactive: WARN
+    com.learn: INFO
+
+gateway:
+  timeout:
+    connect: 3000
+    response: 8000
