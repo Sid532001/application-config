@@ -1,41 +1,39 @@
-# Configuration for API Gateway from Config Server
 spring:
   cloud:
     gateway:
       routes:
-        # Route for User Service (example future service)
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/api/users/**
           filters:
             - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: user-service-cb
+                fallbackUri: forward:/fallback/user-service
         
-        # Route for Content Service (example future service)
         - id: content-service
           uri: lb://content-service
           predicates:
             - Path=/api/content/**
           filters:
             - StripPrefix=1
-            
-        # Route for Authentication Service (example future service)
-        - id: auth-service
-          uri: lb://auth-service
-          predicates:
-            - Path=/api/auth/**
-          filters:
-            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: content-service-cb
+                fallbackUri: forward:/fallback/content-service
 
-# Gateway specific configurations
-gateway:
-  timeout:
-    connect: 5000
-    response: 10000
-  retry:
-    attempts: 3
-    
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.web.reactive: DEBUG
+resilience4j:
+  circuitbreaker:
+    instances:
+      user-service-cb:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+      content-service-cb:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
